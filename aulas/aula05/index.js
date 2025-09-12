@@ -15,7 +15,7 @@ app.use(express.json());
 // middleware embutido ou integrado analisar params=valor
 app.use(express.urlencoded({ extended: false}));
 
-// middleware de terceriso
+// middleware de terceiro
 app.use(cors());
 
 // sempre fazer antes da instancia
