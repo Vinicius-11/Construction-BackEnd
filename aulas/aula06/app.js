@@ -4,7 +4,7 @@ const logger = require("morgan");
 
 const indexRouter = require("./routes/index");
 // importando TAREFAS.JS para o APP
-const tarefaRouter = require("./routes/tarefas");
+const tarefaRouter = require("./routes/tarefaRouter");
 
 const app = express();
 
