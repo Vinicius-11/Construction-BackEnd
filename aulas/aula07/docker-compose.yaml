@@ -1,0 +1,11 @@
+services:                         # Define os serviços que serão executados (containers) neste ambiente Docker.
+  db:                             # Nome do serviço (você pode escolher qualquer nome, aqui foi usado "db").
+    image: mongodb/mongodb-community-server:7.0-ubuntu2204  # Imagem Docker a ser usada, aqui é o MongoDB Community Server 7.0 baseado no Ubuntu 22.04.
+    container_name: meumongo      # Nome personalizado para o container (em vez de um nome gerado automaticamente).
+    ports:
+      - "27017:27017"             # Mapeia a porta 27017 do host para a porta 27017 do container (porta padrão do MongoDB).
+    volumes:
+      - ./:/data/db               # Mapeia o diretório atual (.) do host para o diretório de dados do MongoDB dentro do container (/data/db).
+                                  # Isso permite persistência de dados e facilita o desenvolvimento local.
+    tty: true                     # Garante que o container mantenha um terminal aberto (útil para debugging ou interações manuais).
+    stdin_open: true              # Mantém a entrada padrão aberta, permitindo interações com o container via terminal se necessário.
