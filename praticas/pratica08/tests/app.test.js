@@ -2,55 +2,70 @@ const supertest = require("supertest");
 const app = require("../app");
 const request = supertest(app);
 
-let token = "";
+describe("Testes das rotas de autenticação e produtos", () => {
+  let token;
+  let novoToken;
 
-describe("Testes da API de produtos e usuários", () => {
-  it('Deve retornar 401 e msg "Não autorizado" em GET /produtos sem token', async () => {
+  test("GET /produtos deve retornar 401 e msg 'Não autorizado'", async () => {
     const response = await request.get("/produtos");
+
     expect(response.status).toBe(401);
-    expect(response.type).toMatch(/json/);
+    expect(response.headers["content-type"]).toMatch(/json/);
     expect(response.body).toHaveProperty("msg", "Não autorizado");
   });
 
-  it('Deve retornar 401 e msg "Token inválido" em GET /produtos com token incorreto', async () => {
+  test("GET /produtos com token inválido deve retornar 401 e msg 'Token inválido'", async () => {
     const response = await request
       .get("/produtos")
-      .set("authorization", "123456789");
+      .set("authorization", "Bearer 123456789"); // importante: usar formato Bearer
+
     expect(response.status).toBe(401);
-    expect(response.type).toMatch(/json/);
+    expect(response.headers["content-type"]).toMatch(/json/);
     expect(response.body).toHaveProperty("msg", "Token inválido");
   });
 
-  it("Deve retornar 200 e um token em POST /usuarios/login", async () => {
-    const response = await request.post("/usuarios/login").send({
-      usuario: "email@exemplo.com",
-      senha: "abcd1234",
-    });
+  test("POST /usuarios/login deve retornar 200 e conter um token", async () => {
+    const response = await request
+      .post("/usuarios/login")
+      .send({ usuario: "email@exemplo.com", senha: "abcd1234" });
     expect(response.status).toBe(200);
-    expect(response.type).toMatch(/json/);
+    expect(response.headers["content-type"]).toMatch(/json/);
     expect(response.body).toHaveProperty("token");
-    token = response.body.token; // salva o token para os próximos testes
+
+    token = response.body.token;
+    expect(token).toBeDefined();
   });
 
-  it("Deve retornar 200 e lista de produtos em GET /produtos com token válido", async () => {
-    const response = await request.get("/produtos").set("authorization", token);
+  test("GET /produtos com token válido deve retornar 200 e JSON", async () => {
+    const response = await request
+      .get("/produtos")
+      .set("authorization", `Bearer ${token}`);
+
     expect(response.status).toBe(200);
-    expect(response.type).toMatch(/json/);
+    expect(response.headers["content-type"]).toMatch(/json/);
+    expect(response.body).not.toBeNull();
   });
 
-  it("Deve retornar 200 e um novo token em POST /usuarios/renovar com token válido", async () => {
+  test("POST /usuarios/renovar com token válido deve retornar 200 e conter novo token", async () => {
     const response = await request
       .post("/usuarios/renovar")
-      .set("authorization", token);
+      .set("authorization", `Bearer ${token}`);
+
     expect(response.status).toBe(200);
-    expect(response.type).toMatch(/json/);
+    expect(response.headers["content-type"]).toMatch(/json/);
     expect(response.body).toHaveProperty("token");
-    token = response.body.token; // salva o novo token
+
+    novoToken = response.body.token;
+    expect(novoToken).toBeDefined();
   });
 
-  it("Deve retornar 200 e lista de produtos em GET /produtos com novo token", async () => {
-    const response = await request.get("/produtos").set("authorization", token);
+  test("GET /produtos com novo token deve retornar 200 e JSON", async () => {
+    const response = await request
+      .get("/produtos")
+      .set("authorization", `Bearer ${novoToken}`);
+
     expect(response.status).toBe(200);
-    expect(response.type).toMatch(/json/);
+    expect(response.headers["content-type"]).toMatch(/json/);
+    expect(response.body).not.toBeNull();
   });
 });

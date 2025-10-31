@@ -3,8 +3,8 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
-const usuariosRouter = require("./routes/usuariosRouter.js");
-const produtosRouter = require("./routes/produtosRouter.js");
+const usuariosRouter = require("./routes/usuariosRouter");
+const produtosRouter = require("./routes/produtosRouter");
 
 const app = express();
 
