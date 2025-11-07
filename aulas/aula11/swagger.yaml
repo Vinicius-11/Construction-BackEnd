@@ -11,6 +11,7 @@ tags:
 paths:
   /tarefas:
     get:
+      summary: Listar todas tarefas
       tags:
         - tarefas
       responses:
@@ -18,8 +19,14 @@ paths:
           content:
             application/json:
               schema:
-                type: array
+                $ref: "#/components/schemas/ArrayOfTarefas"
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro500'
     post:
+      summary: Cria uma nova tarefa
       tags:
         - tarefas
       requestBody:
@@ -27,24 +34,29 @@ paths:
           application/json:
             schema:
               type: object
+              properties:
+                nome:
+                  type: string
+                  example: "Estudar Swagger"
       responses:
         201:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/Tarefas'
         422:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/Erro422'
         500:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/Erro500'
   /tarefas/id:
     get:
+      summary: Busca uma tarefa pelo ID
       tags:
         - tarefas
       parameters:
@@ -55,11 +67,130 @@ paths:
             type: integer
       responses:
         200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarefas'
         404:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro404'
         500:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro500'
     put:
+      security:
+        - JWTAuth: []
+      summary: Atualiza uma tarefa pelo ID
       tags:
         - tarefas
+      parameters:
+        - in: path
+          name: tarefaId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                concluida:
+                  type: boolean 
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tarefas'
+        404:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro404'
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro500'
+
     delete:
+      summary: Deleta uma tarefa pelo ID
       tags:
         - tarefas
+      parameters:
+        - in: path
+          name: tarefaId
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          content:
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro400'
+        404:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro404'
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Erro500'
+components:
+  schemas:
+  securitySchemes:
+    JWTAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+    Tarefas:
+      type: objetc
+      properties:
+        _id:
+          type: string
+        nome:
+          type: string
+          example: "Estudar Swagger"
+        concluida:
+          type: boolean
+    ArrayOfTarefas:
+      type: array
+      items:
+        $ref: "#/components/schemas/Tarefas"
+
+    Erro400:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: "Id inválido"
+    Erro404:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: "Tarefa não encontrada"
+    Erro422:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: "Nome é obrigatório"
+    Erro500:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: "Erro interno na API"
