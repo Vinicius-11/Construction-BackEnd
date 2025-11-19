@@ -1,0 +1,105 @@
+openapi: 3.0.0
+info:
+  title: Minha API REST
+  version: 0.1
+servers:
+  - url: http://localhost:3000/
+tags:
+  - name: usuarios
+paths:
+  /usuarios: 
+    post:
+      tags: 
+         - usuarios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/usuarios'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/usuarios'
+        422:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mensagens'
+    delete:
+      tags: 
+         - usuarios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/usuarios'
+      responses:
+        204:
+  /usuarios/login:
+    post:
+      tags: 
+         - usuarios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/usuarios'
+      responses:
+        201:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/usuarios'
+        422:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mensagens'
+  /usuarios/renovar:
+    post:
+      tags: 
+         - usuarios
+      JWTAuth:
+        - []
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mensagens'
+        401:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mensagens'
+components:
+  schemas:
+    usuarios:
+      type: object
+      required: [email, senha]
+      properties:
+        _id:
+          type: string
+        email:
+          type: string
+        senha:
+          type: string
+    mensagens:
+      type: object
+      properties:
+        msg: 
+          type: string
+securitySchemes:
+  JWTAuth:
+    type:
+      apiKey:
+        parameter:
+          headers:
+             - authorization
+          scheme: bearer
+          bearerFormat: JWT
